@@ -5,7 +5,7 @@ import {defineConfig, loadEnv} from 'vite';
 
 export default defineConfig(({mode}) => {
   const env = loadEnv(mode, '.', '');
-  const basePath = process.env.VERCEL ? '/' : '/task_manager_app/';
+  const basePath = process.env.GITHUB_ACTIONS ? '/task_manager_app/' : '/';
   return {
     base: basePath,
     plugins: [react(), tailwindcss()],
