@@ -2954,7 +2954,7 @@ export default function App() {
               </>
             ) : (
               <button 
-                onClick={() => handleSignIn()}
+                onClick={() => handleSignIn('google')}
                 className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100"
               >
                 <LogIn size={16} />
@@ -3048,10 +3048,10 @@ export default function App() {
                 <Mail size={13} />
                 <span>
                   {settings.language === 'ja' 
-                    ? '学内Wi-Fi等で接続できない場合: メールログイン / 連携' 
+                    ? 'メールログイン / 連携' 
                     : settings.language === 'fr'
-                    ? 'Problème Wi-Fi ? Connexion e-mail / Lier'
-                    : 'Campus Wi-Fi issue? Email Login / Link'}
+                    ? 'Connexion e-mail / Lier'
+                    : 'Email Login / Link'}
                 </span>
               </button>
             </div>
