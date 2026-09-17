@@ -173,9 +173,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       await sendPasswordReset(email);
       setSuccessMessage(
         t(
-          `「${email}」宛にパスワード設定メールを送信しました。メール内のリンクを開いてパスワードを設定後、「メールでログイン」タブからログインしてください。元々のタスクや設定データはそのまま保持されます。`,
-          `Password setup email sent to "${email}". Set your password via the link in the email, then log in via the "Email Login" tab. All your tasks and settings will be preserved.`,
-          `E-mail de configuration envoyé à "${email}". Définissez votre mot de passe via le lien, puis connectez-vous. Vos tâches et réglages seront conservés.`
+          `「${email}」宛にパスワード設定メールの送信リクエストを完了しました。過去にGoogle連携または新規登録したアドレスであれば数分以内にメールが届きます（届かない場合は迷惑メールフォルダをご確認いただくか、未登録の場合は「新規登録」をお試しください）。`,
+          `Password reset request processed for "${email}". If this address was previously registered, an email will arrive shortly (check Spam folder, or use "Sign Up" if it was never registered).`,
+          `Demande traitée pour "${email}". Si cette adresse est enregistrée, vous recevrez un e-mail sous peu (vérifiez vos spams).`
         )
       );
     } catch (err: any) {
@@ -186,13 +186,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
       <div 
-        className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md overflow-hidden flex flex-col max-h-[92vh]"
+        className="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md h-[540px] max-h-[82vh] my-auto overflow-hidden flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+        <div className="shrink-0 px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold shadow-sm shadow-indigo-200">
               <Shield size={16} />
@@ -215,7 +215,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex border-b border-slate-200 bg-slate-100/70 p-1 gap-1 text-xs font-bold">
+        <div className="shrink-0 flex border-b border-slate-200 bg-slate-100/70 p-1 gap-1 text-xs font-bold">
           <button
             type="button"
             onClick={() => { setTab('google'); setError(null); setSuccessMessage(null); }}
@@ -268,7 +268,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         </div>
 
         {/* Content Body */}
-        <div className="p-6 overflow-y-auto space-y-4">
+        <div className="flex-1 min-h-0 overflow-y-auto p-6 space-y-4">
           {error && (
             <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-start gap-2.5">
               <AlertCircle size={16} className="shrink-0 mt-0.5" />
@@ -311,9 +311,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 </div>
                 <p className="text-[11px] text-amber-900/80 leading-relaxed">
                   {t(
-                    '学内セキュリティによりポップアップが遮断される場合は、以下の「リダイレクト方式」をお試しいただくか、上の「メールログイン」または「データ紐付け」をご利用ください。',
-                    'If popup is blocked by campus firewall, try Redirect Mode below, or use Email Login / Account Link.',
-                    'Si la fenêtre contextuelle est bloquée par le pare-feu, essayez le mode redirection ci-dessous, ou la connexion par e-mail.'
+                    '※ ChromeやSafariの最新セキュリティ仕様（Cookie・ストレージ分離）により、リダイレクト方式はvercel.appやgithub.io等の別ドメインで認証の受渡しが失敗することがあります。通常のWi-Fi環境ではポップアップ方式を、学内Wi-Fi等でGoogle認証が遮断される場合は「メールログイン」をご利用いただくのが最も確実です。',
+                    'Note: Due to browser partitioned storage policies in Chrome/Safari, redirect login may bounce back on external domains. Use Popup on standard networks, or Email Login on restrictive campus Wi-Fi.',
+                    'Note : En raison des restrictions de stockage inter-domaines, utilisez le popup sur réseau standard ou la connexion e-mail sur réseau restreint.'
                   )}
                 </p>
                 <button
@@ -513,7 +513,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="kikuchi.riku... / your.email@gmail.com"
+                    placeholder="your.email@gmail.com"
                     className="w-full pl-9 pr-3 py-2.5 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:outline-none transition-all"
                   />
                 </div>
@@ -527,6 +527,28 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 <KeyRound size={15} />
                 <span>{loading ? t('送信中...', 'Sending...', 'Envoi...') : t('パスワード設定・再設定メールを送信', 'Send Password Setup Email', 'Envoyer le lien de mot de passe')}</span>
               </button>
+
+              {/* Delivery notice */}
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1 text-[11px] text-slate-500">
+                <p className="font-bold text-slate-700 flex items-center gap-1">
+                  <HelpCircle size={13} className="text-slate-400" />
+                  <span>{t('メールが届かない場合のご注意', 'Important note on email delivery', 'Remarque sur la réception de l\'e-mail')}</span>
+                </p>
+                <p className="leading-relaxed">
+                  {t(
+                    '① 未登録アドレスへの対策: セキュリティ保護仕様により、過去にGoogle連携や登録を行ったことがない未登録アドレスの場合、送信完了と表示されても実際にはメールは送られません。新規利用は「新規登録」タブをご利用ください。',
+                    '1. Unregistered addresses: Due to security protection, no email is sent to addresses never registered before. For new accounts, please use the "Sign Up" tab.',
+                    '1. Adresses non enregistrées : aucun e-mail n\'est envoyé aux adresses non enregistrées. Utilisez l\'onglet "Créer".'
+                  )}
+                </p>
+                <p className="leading-relaxed">
+                  {t(
+                    '② 迷惑メールフォルダ: メールフィルターの判定によって「迷惑メール (Junk / Spam)」フォルダに自動分類されてしまうことがあります。届かない場合は迷惑メールフォルダもご確認ください。',
+                    '2. Spam folder: Security filters may classify the message as Junk / Spam. Please check your spam folder as well if not received.',
+                    '2. Courrier indésirable : les filtres de sécurité peuvent classer l\'e-mail comme Spam. Veuillez vérifier ce dossier.'
+                  )}
+                </p>
+              </div>
 
               <div className="pt-2 text-center text-xs text-slate-500">
                 {t('パスワードを設定済みの方は', 'Already set your password?', 'Mot de passe déjà défini ?')}{' '}
@@ -543,7 +565,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         </div>
 
         {/* Footer info */}
-        <div className="px-6 py-3 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+        <div className="shrink-0 px-6 py-3 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
           <span>{t('データは安全に暗号化されます', 'Data is securely encrypted', 'Données chiffrées')}</span>
           <button
             type="button"
